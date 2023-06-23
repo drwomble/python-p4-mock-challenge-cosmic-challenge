@@ -62,18 +62,17 @@ class ScientistById(Resource):
             return make_response(jsonify({"error": "Scientist not found"}), 404)
         
     def patch(self, id):
+        scientist_by_id = db.session.get(Scientist, id)
+        if not scientist_by_id:
+            return make_response({"error": "Scientist not found"}, 404)
         try:
-            scientist = Scientist.query.filter(Scientist.id == id).first()
-            if not scientist:
-                return make_response(jsonify({"error": "Scientist not found"}), 404)
-            # import ipdb; ipdb.set_trace()
-            for attr in request.get_json():
-                setattr(scientist, attr, request.get_json()[attr])
-            db.session.add(scientist)
+            data = request.get_json()
+            for key in data:
+                setattr(scientist_by_id, key, data[key])
             db.session.commit()
-            return make_response(jsonify(scientist.to_dict()), 202)
+            return make_response(scientist_by_id.to_dict(), 200)
         except Exception as e:
-            return make_response(jsonify({"errors": ["validation errors"]}), 400)
+            return make_response({"errors": [str(e)]}, 400)
         
 api.add_resource(ScientistById, '/scientists/<int:id>')
 
