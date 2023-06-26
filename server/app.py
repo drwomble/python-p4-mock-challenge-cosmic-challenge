@@ -92,7 +92,7 @@ class Missions(Resource):
             db.session.commit()
             return make_response(jsonify(mission.to_dict()), 201)
         except Exception as e:
-            return make_response(jsonify({"errors": ["validation errors"]}), 400)
+            return make_response(jsonify({"errors": [str(e)]}), 400)
         
 api.add_resource(Missions, '/missions')
 if __name__ == '__main__':
